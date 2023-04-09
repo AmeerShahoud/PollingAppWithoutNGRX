@@ -1,0 +1,41 @@
+<mat-progress-bar
+  *ngIf="isLoading"
+  color="warn"
+  mode="indeterminate"
+></mat-progress-bar>
+<ng-container *ngIf="!isLoading">
+  <ng-container *ngIf="!(error$ | async); else questionNotFound">
+    <div class="container">
+      <div class="row justify-content-center py-5 m-0">
+        <ng-container
+          *ngIf="IsSelectedQuestionAnswered$ | async; else voteQuestion"
+          ><app-question-statistics
+            [question]="(selectedAuthorQuestion$ | async)!"
+            [user]="user"
+            class="col-lg-8 col-md-10 col-sm-12"
+          ></app-question-statistics
+        ></ng-container>
+        <ng-template #voteQuestion
+          ><ng-container
+            *ngIf="selectedAuthorQuestion$ | async as selectedAuthorQuestion"
+            ><app-question-vote
+              [question]="selectedAuthorQuestion"
+              [user]="user"
+              class="col-lg-8 col-md-10 col-sm-12"
+            ></app-question-vote></ng-container
+        ></ng-template>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-template #questionNotFound>
+  <div class="d-flex flex-column justify-content-center align-items-center">
+    <img
+      matTooltip="Question Not Found"
+      style="width: 500px; margin-top: 100px"
+      src="assets/images/question-not-found.png"
+      alt="question not found"
+    />
+  </div>
+</ng-template>

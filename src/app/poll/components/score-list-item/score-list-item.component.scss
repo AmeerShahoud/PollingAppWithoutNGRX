@@ -1,0 +1,15 @@
+.score-list-item{
+    position: relative;
+    overflow: hidden;
+}
+
+.trophy {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 75px;
+    height: 75px;
+    background-image: url('../../../../assets/trophy/bg.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+}

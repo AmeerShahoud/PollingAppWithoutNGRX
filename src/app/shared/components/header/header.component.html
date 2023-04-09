@@ -1,0 +1,70 @@
+<div class="bg-dark shadow">
+  <div class="container py-2">
+    <div class="d-flex flex-column-reverse flex-lg-row justify-content-between">
+      <nav
+        class="d-flex align-items-center justify-content-between justify-content-lg-start"
+      >
+        <div class="brand">
+          <a
+            class="btn text-white d-flex align-items-center me-4 ps-0"
+            routerLink="/home"
+          >
+            <img
+              src="assets/images/polling-icon.png"
+              alt="logo"
+              class="me-1 p-0"
+              style="width: 25px; height: 25px"
+            />
+            <h2 style="font-size: 1.8rem" class="m-0 p-0">Polling!</h2></a
+          >
+        </div>
+        <div class="links d-flex justify-content-between align-items-center">
+          <a
+            mat-button
+            class="btn btn-dark text-white"
+            routerLink="/home"
+            routerLinkActive="active"
+            >Home</a
+          >
+          <a
+            mat-button
+            class="btn btn-dark text-white"
+            routerLink="/add"
+            routerLinkActive="active"
+            >New Question</a
+          >
+          <a
+            mat-button
+            class="btn btn-dark text-white"
+            routerLink="/leaderboard"
+            routerLinkActive="active"
+            >LeaderBoard</a
+          >
+        </div>
+      </nav>
+      <div
+        class="d-flex flex-row-reverse flex-lg-row align-items-center justify-content-between justify-content-lg-start text-white"
+        style="font-size: 1.2rem"
+        *ngIf="user$ | async as user"
+      >
+        <div class="user">
+          <span class="me-2">Hello, {{ user.name }}</span>
+          <img
+            style="width: 40px; height: 40px"
+            class="me-2"
+            appImgPlaceholder
+            [src]="user.avatarURL"
+            [alt]="user.name"
+          />
+        </div>
+        <span
+          class="mx-2 d-none d-lg-inline"
+          style="border-left: 1px solid white; height: 2rem"
+        ></span>
+        <button (click)="onLogout()" mat-button class="btn btn-dark text-white">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+:root {
+  --mat-primary: #3f51b5;
+  --mat-accent: #ff4081;
+  --mat-warn: #f44336;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.mat-bg-primary {
+  background-color: var(--mat-primary);
+  color: white;
+}
+
+.mat-bg-accent {
+  background-color: var(--mat-accent);
+  color: white;
+}
+
+.mat-bg-warn {
+  background-color: var(--mat-warn);
+  color: white;
+}
+
+

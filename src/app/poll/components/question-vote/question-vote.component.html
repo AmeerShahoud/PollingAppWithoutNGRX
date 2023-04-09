@@ -1,0 +1,53 @@
+<div class="bg-white shadow-lg rounded overflow-hidden">
+  <h2
+    style="font-size: 1.5rem; font-weight: bold"
+    class="heading mat-bg-accent p-3 text-start mb-0"
+  >
+    {{
+      user!.id == authorQuestion.author.id
+        ? "Asked by: You"
+        : "Asked by: " + authorQuestion.author.name
+    }}
+  </h2>
+  <div class="content row justify-content-between align-items-center p-3">
+    <div class="avatar col-12 text-center">
+      <img
+        style="width: 30%"
+        appImgPlaceholder
+        [src]="authorQuestion.author.avatarURL"
+        alt=""
+      />
+    </div>
+    <div class="question-details mt-4 col-12 text-start">
+      <h3 style="font-size: 1.3rem; font-weight: bold" class="mt-0">
+        Would you rather:
+      </h3>
+      <mat-button-toggle-group
+        class="row m-0 mb-3 w-100 text-center"
+        [formControl]="answer"
+        ><mat-button-toggle
+          style="font-size: 1.1rem"
+          class="col-12"
+          value="optionOne"
+          >{{ authorQuestion.question.optionOne.text }}</mat-button-toggle
+        >
+        <app-special-text class="col-12 px-0" text="OR"></app-special-text>
+        <mat-button-toggle
+          style="font-size: 1.1rem"
+          class="col-12"
+          value="optionTwo"
+          >{{ authorQuestion.question.optionTwo.text }}</mat-button-toggle
+        ></mat-button-toggle-group
+      >
+
+      <button
+        (click)="onSave()"
+        mat-raised-button
+        color="primary"
+        class="w-100"
+      >
+        Save Answer
+      </button>
+    </div>
+  </div>
+</div>

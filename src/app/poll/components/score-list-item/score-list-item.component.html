@@ -1,0 +1,52 @@
+<div
+  class="score-list-item bg-white shadow-lg rounded row justify-content-between align-items-center p-2 pe-1 mb-4"
+>
+  <div class="image col-3">
+    <img class="w-100" appImgPlaceholder [src]="userScore.avatarUrl" />
+  </div>
+  <div class="details col-7">
+    <h3 style="font-size: 1.4rem">
+      <strong>
+        {{
+          (user$ | async)?.id == userScore.userId ? "You" : userScore.userName
+        }}</strong
+      >
+    </h3>
+    <div class="answered d-flex justify-content-between align-items-center">
+      <span>Answered Questions</span
+      ><span
+        ><strong>{{ userScore.totalAnsweredQuestions }}</strong></span
+      >
+    </div>
+    <hr style="margin: 5px 0" />
+    <div class="created d-flex justify-content-between align-items-center">
+      <span>Created Questions</span
+      ><span
+        ><strong>{{ userScore.totalCreatedQuestions }}</strong></span
+      >
+    </div>
+  </div>
+  <div class="score col-2 align-self-stretch">
+    <h4
+      style="font-size: 1.2rem; height: 37%; margin: 0"
+      class="mat-bg-accent d-flex justify-content-center align-items-center"
+    >
+      Score
+    </h4>
+    <div
+      style="border: 1px solid var(--mat-accent); height: 63%"
+      class="d-flex justify-content-center align-items-center"
+    >
+      <span style="font-size: 1.7rem; font-weight: bold">{{
+        userScore.totalScore
+      }}</span>
+    </div>
+  </div>
+  <div *ngIf="ranking" class="trophy ps-2 pt-1 m-0">
+    <img
+      style="width: 30px"
+      [src]="'assets/trophy/' + ranking + '.png'"
+      alt=""
+    />
+  </div>
+</div>

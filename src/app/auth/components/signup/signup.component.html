@@ -1,0 +1,60 @@
+<div class="bg-white shadow-lg rounded text-center p-3">
+  <div class="text-center" style="position: relative">
+    <img
+      [src]="avatarUrl ?? ''"
+      appImgPlaceholder
+      style="height: 200px; width: 200px"
+    />
+    <button
+      style="position: absolute; right: 37%; bottom: 0"
+      mat-mini-fab
+      color="primary"
+      (click)="openAvatarDialog()"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+  <form [formGroup]="signUpForm" (ngSubmit)="onSignUp()" class="mt-4">
+    <div class="row gx-2 mt-2 justify-content-center align-items-start">
+      <mat-form-field class="col-md-6 col-12" appearance="outline"
+        ><mat-label>First Name</mat-label>
+        <input appAutoFocus formControlName="firstName" type="text" matInput />
+        <mat-error *ngIf="firstName.hasError('required')"
+          >First Name is required</mat-error
+        >
+        <mat-error *ngIf="firstName.hasError('pattern')"
+          >First Name should have letters only</mat-error
+        >
+      </mat-form-field>
+      <mat-form-field class="col-md-6 col-12" appearance="outline"
+        ><mat-label>Last Name</mat-label>
+        <input formControlName="lastName" type="text" matInput />
+        <mat-error *ngIf="lastName.hasError('required')"
+          >Last Name is required</mat-error
+        >
+        <mat-error *ngIf="lastName.hasError('pattern')"
+          >Last Name should have letters only</mat-error
+        >
+      </mat-form-field>
+    </div>
+    <hr />
+    <button
+      style="font-size: 1.2rem"
+      class="w-100 p-4"
+      mat-raised-button
+      color="primary"
+    >
+      Create Account
+    </button>
+  </form>
+  <app-special-text text="Already Have an Account?"></app-special-text>
+  <button
+    style="font-size: 1.2rem"
+    class="w-100 p-4"
+    mat-raised-button
+    color="accent"
+    routerLink="/login"
+  >
+    Sign In
+  </button>
+</div>

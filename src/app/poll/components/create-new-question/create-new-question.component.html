@@ -1,0 +1,37 @@
+<div class="bg-white shadow-lg rounded overflow-hidden">
+  <h2
+    style="font-size: 1.5rem; font-weight: bold"
+    class="heading mat-bg-accent text-center p-3 mb-0"
+  >
+    Create New Question
+  </h2>
+  <div class="p-3">
+    <p style="font-size: 1.2rem" class="mb-4">Complete the Question</p>
+    <p style="font-size: 2rem"><strong> Would You Rather</strong></p>
+    <form [formGroup]="questionForm">
+      <mat-form-field class="w-100 mt-3" appearance="outline"
+        ><mat-label>Option One Text</mat-label>
+        <input appAutoFocus type="text" formControlName="optionOne" matInput />
+        <mat-error>Option One Text is required</mat-error>
+      </mat-form-field>
+      <app-special-text text="OR"></app-special-text>
+      <mat-form-field
+        style="margin-top: 16px"
+        class="w-100"
+        appearance="outline"
+        ><mat-label>Option Two Text</mat-label>
+        <input type="text" formControlName="optionTwo" matInput />
+        <mat-error>Option Two Text is required</mat-error>
+      </mat-form-field>
+      <button
+        style="font-size: 1.2rem"
+        class="w-100 p-4"
+        mat-raised-button
+        color="primary"
+        (click)="onSubmit()"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Choose Your Avatar</h2>
+<mat-dialog-content>
+  <div class="row px-5 gx-5 justify-content-center align-items-center">
+    <div
+      *ngFor="let avatarUrl of avatarUrls"
+      role="button"
+      (click)="onPickAvatar(avatarUrl)"
+      class="btn btn-light col-6 col-sm-4 col-md-3 mb-3"
+      matRipple
+      matRippleColor="accent"
+    >
+      <img style="width: 100%" [src]="avatarUrl" alt="" />
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions></mat-dialog-actions>

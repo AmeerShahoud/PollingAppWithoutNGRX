@@ -1,0 +1,41 @@
+<div class="bg-white shadow-lg rounded text-center p-3">
+  <img
+    src="assets/images/polling.png"
+    alt="polling"
+    class="image overflow-hidden rounded"
+    style="height: 150px; width: 150px"
+  />
+
+  <h2 style="font-size: 2rem" class="mt-2 mb-3">Polling!</h2>
+  <p>Please Sign in to continue</p>
+  <mat-form-field class="w-100 mt-2" appearance="outline"
+    ><mat-label>Select User</mat-label
+    ><mat-select [formControl]="selectedUser" name="food">
+      <mat-option *ngFor="let user of users" [value]="user.id"
+        >{{ user.name }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="selectedUser.hasError('required')"
+      >Please select a user to continue</mat-error
+    >
+  </mat-form-field>
+  <button
+    style="font-size: 1.2rem"
+    class="w-100 p-4"
+    mat-raised-button
+    color="primary"
+    (click)="onLogin()"
+  >
+    Login
+  </button>
+  <app-special-text text="OR"></app-special-text>
+  <button
+    style="font-size: 1.2rem"
+    class="w-100 p-4"
+    mat-raised-button
+    color="accent"
+    routerLink="/sign-up"
+  >
+    Create New Account
+  </button>
+</div>

@@ -1,0 +1,8 @@
+<div class="score-list">
+  <app-score-list-item
+    *ngFor="let scoreItem of scoreList$ | async; let rank = index"
+    [userScore]="scoreItem"
+    [ranking]="rank + 1 <= 3 ? rank + 1 : null"
+  >
+  </app-score-list-item>
+</div>

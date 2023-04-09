@@ -1,0 +1,22 @@
+<div
+  style="position: relative"
+  class="rounded p-2 mb-4"
+  [ngClass]="{ 'user-answer': isUserAnswer, 'not-user-answer': !isUserAnswer }"
+>
+  <p style="font-size: 1.1rem">Would you rather {{ optionText }}</p>
+  <div
+    class="progress overflow-hidden rounded"
+    style="background-color: e9e9e9; height: 25px"
+  >
+    <div
+      [ngStyle]="{ width: optionPerecentage + '%' }"
+      class="mat-bg-primary h-100 d-flex align-items-center justify-content-center text-center overflow-hidden"
+    >
+      {{ optionPerecentage | number : "1.1-1" }}%
+    </div>
+  </div>
+  <p class="text-center mt-2 mb-5">
+    {{ optionTotalVotes }} out of {{ totalVotes }}
+  </p>
+  <span *ngIf="isUserAnswer" class="vote-badge">your vote</span>
+</div>

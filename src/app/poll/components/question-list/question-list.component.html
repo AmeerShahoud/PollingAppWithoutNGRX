@@ -1,0 +1,20 @@
+<div class="row justify-content-center m-0 p-4">
+  <ng-container *ngIf="authorQuestions.length; else emptyList">
+    <app-question-list-item
+      class="col-12 mb-3"
+      *ngFor="let question of authorQuestions"
+      [question]="question"
+    ></app-question-list-item
+  ></ng-container>
+</div>
+
+<ng-template #emptyList>
+  <p style="font-size: 1.5rem">
+    <ng-container *ngIf="isAnsweredQuestions === false"
+      >Great job!!! You answered all questions</ng-container
+    >
+    <ng-container *ngIf="isAnsweredQuestions === true"
+      >You have not answered any question yet! Start now</ng-container
+    >
+  </p>
+</ng-template>

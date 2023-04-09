@@ -1,0 +1,24 @@
+.user-answer {
+    border: 2px solid var(--mat-primary);
+}
+
+.not-user-answer {
+    border: 2px solid #d1d1d1;
+}
+
+.vote-badge {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translate(50%,-50%);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    text-align: center;
+    line-height: 15px;
+    border-radius: 50%;
+    color: white;
+    background-color: var(--mat-primary);
+}
