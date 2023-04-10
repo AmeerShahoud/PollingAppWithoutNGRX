@@ -1,8 +1,17 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy, OnInit } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Router } from "@angular/router";
-import { BehaviorSubject, from, map, of, switchMap, throwError } from "rxjs";
-import * as db from "../../../db/_DATA.js";
+import { ActivatedRoute, Router } from "@angular/router";
+import {
+  BehaviorSubject,
+  Subject,
+  catchError,
+  map,
+  of,
+  switchMap,
+  takeUntil,
+  tap,
+  throwError,
+} from "rxjs";
 import { User } from "../../models/user.js";
 import { UserService } from "../user/user.service";
 
@@ -17,7 +26,7 @@ export interface AuthState {
 @Injectable({
   providedIn: "root",
 })
-export class AuthService {
+export class AuthService implements OnInit, OnDestroy {
   private _authState: AuthState = {
     isLoading: false,
     isLoggedIn: false,
@@ -40,61 +49,95 @@ export class AuthService {
     return this._authStateSubject.pipe(map((state) => state.error));
   }
 
+  private returnUrl!: string;
+  private destroySubscriptions = new Subject();
+
   constructor(
     private userService: UserService,
     private router: Router,
+    private route: ActivatedRoute,
     private snackBar: MatSnackBar
   ) {}
 
-  login(userId: string) {
-    return this.userService.getUserById(userId).pipe(
-      switchMap((user) => {
-        if (!user) return throwError(() => new Error("User not Found!"));
-        else return of(user);
-      })
-    );
+  ngOnInit() {
+    const _user = localStorage.getItem("user");
+    if (_user) {
+      this._upadateAuthState({ isLoggedIn: true });
+    }
+    this.route.queryParams
+      .pipe(takeUntil(this.destroySubscriptions))
+      .subscribe((queryParams) => {
+        this.returnUrl = queryParams["returnUrl"] || "/home";
+      });
   }
 
-  _login(userId: string) {
+  login(userId: string) {
+    this._upadateAuthState({ isLoading: true });
     return this.userService.getUserById(userId).pipe(
       switchMap((user) => {
-        if (!user) return throwError(() => new Error("User not Found!"));
+        if (!user)
+          return throwError(
+            () => new Error("Error! Please try to login again.")
+          );
         else return of(user);
-      })
+      }),
+      tap(this._authHandler(`Weclome back! `)),
+      catchError(this._errorHandler)
     );
   }
 
   signUp(firstName: string, lastName: string, avatarUrl: string) {
-    return this.userService.createNewUser(firstName, lastName, avatarUrl);
-  }
-
-  _signUp(firstName: string, lastName: string, avatarUrl: string) {
-    return this.userService.createNewUser(firstName, lastName, avatarUrl);
-  }
-
-  logout() {}
-
-  getUserById(id: string) {
-    return from<Promise<UsersData>>(db._getUsers()).pipe(
-      map((users) => users[id])
+    this._upadateAuthState({ isLoading: true });
+    return this.userService.createNewUser(firstName, lastName, avatarUrl).pipe(
+      switchMap((user) => {
+        if (!user)
+          return throwError(
+            () =>
+              new Error("Error! Creating new account failed, please try again.")
+          );
+        else return of(user);
+      }),
+      tap(this._authHandler(`Weclome to Polling! `)),
+      tap((_) => this.userService.loadUsers()),
+      catchError(this._errorHandler)
     );
   }
 
-  getAllUsers() {
-    return from<Promise<UsersData>>(db._getUsers()).pipe(
-      map((users) => {
-        let _users: User[] = [];
-        for (let id in users) _users.push(users[id]);
-        return _users;
-      })
-    );
+  logout() {
+    localStorage.removeItem("user");
+    this.userService.setCurrentUser(null);
+    this.snackBar.open("Logged out successfully!");
+    this.router.navigate(["/login"]);
+    this._upadateAuthState({ isLoggedIn: false });
   }
 
-  getUpdatedUserPollData = () => {
-    return this.getAllUsers();
+  private _authHandler = (snackPrefixText: string) => {
+    return (user: User) => {
+      localStorage.setItem("user", JSON.stringify(user));
+      this.userService.setCurrentUser(user);
+      this.snackBar.open(snackPrefixText + user.name);
+      this.router.navigate([this.returnUrl]);
+      this._upadateAuthState({
+        isLoggedIn: true,
+        isLoading: false,
+        error: null,
+      });
+    };
   };
 
-  private _upadateAuthState(newState: Partial<AuthState>) {
+  private _errorHandler = (err: Error) => {
+    localStorage.removeItem("user");
+    this.userService.setCurrentUser(null);
+    this.snackBar.open(err.message);
+    this._upadateAuthState({
+      isLoggedIn: false,
+      isLoading: false,
+      error: err.message,
+    });
+    return of();
+  };
+
+  private _upadateAuthState = (newState: Partial<AuthState>) => {
     this._authState = {
       ...this._authState,
       isLoggedIn:
@@ -109,5 +152,9 @@ export class AuthService {
         newState.error === undefined ? this._authState.error : newState.error,
     };
     this._authStateSubject.next({ ...this._authState });
+  };
+
+  ngOnDestroy(): void {
+    this.destroySubscriptions.complete();
   }
 }

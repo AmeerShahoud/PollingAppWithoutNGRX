@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnInit } from "@angular/core";
 import { from, map, of, switchMap, throwError } from "rxjs";
 import * as db from "../../../db/_DATA.js";
 import { Question } from "../../models/question.js";
@@ -8,8 +8,13 @@ type QuestionsData = { [questionId: string]: Question };
 @Injectable({
   providedIn: "root",
 })
-export class QuestionService {
+export class QuestionService implements OnInit {
   constructor() {}
+
+  ngOnInit(): void {
+    console.log("hello from question service");
+    this.loadQuestions();
+  }
 
   getQuestionById(id: string) {
     return from<Promise<QuestionsData>>(db._getQuestions()).pipe(
@@ -23,6 +28,16 @@ export class QuestionService {
   }
 
   getAllQuestions() {
+    return from<Promise<QuestionsData>>(db._getQuestions()).pipe(
+      map((questions) => {
+        let _questions: Question[] = [];
+        for (let id in questions) _questions.push(questions[id]);
+        return _questions;
+      })
+    );
+  }
+
+  loadQuestions() {
     return from<Promise<QuestionsData>>(db._getQuestions()).pipe(
       map((questions) => {
         let _questions: Question[] = [];

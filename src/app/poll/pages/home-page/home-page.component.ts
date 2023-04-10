@@ -3,6 +3,7 @@ import { Store } from "@ngrx/store";
 import * as PollSelectors from "../../state/selectors/poll.selectors";
 import { AuthorQuestion } from "../../models/author-question";
 import { Subject, takeUntil } from "rxjs";
+import { QuestionService } from "../../services/question/question.service";
 
 @Component({
   selector: "app-home-page",
@@ -24,7 +25,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     return `Unanswered Questions - (${this.unAnsweredQuestions.length})`;
   }
 
-  constructor(private store: Store) {}
+  constructor(private store: Store, private questionService: QuestionService) {}
 
   ngOnInit(): void {
     this.store

@@ -1,10 +1,9 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, from, map } from "rxjs";
+import { BehaviorSubject, from, map, tap } from "rxjs";
 import { User } from "../../models/user";
 import * as db from "../../../db/_DATA.js";
-import { UserUtilsService } from "./user-utils.service";
 
-export type UsersData = { [userId: string]: User };
+type UsersData = { [userId: string]: User };
 
 export interface UserState {
   isLoading: boolean;
@@ -44,21 +43,36 @@ export class UserService {
     return this._userStateSubject.pipe(map((state) => state.error));
   }
 
-  constructor(private userUtils: UserUtilsService) {}
+  constructor() {
+    const _user = localStorage.getItem("user");
+    if (_user) {
+      this._upadateUserState({ currentUser: JSON.parse(_user) as User });
+    }
+  }
 
   getUserById(id: string) {
+    this._upadateUserState({ isLoading: true });
     return from<Promise<UsersData>>(db._getUsers()).pipe(
-      map((users) => users[id])
+      map((users) => users[id]),
+      tap((_) => this._upadateUserState({ isLoading: false }))
     );
   }
 
-  getAllUsers() {
+  loadUsers() {
+    this._upadateUserState({ isLoading: true });
     return from<Promise<UsersData>>(db._getUsers()).pipe(
       map((users) => {
         let _users: User[] = [];
         for (let id in users) _users.push(users[id]);
         return _users;
-      })
+      }),
+      tap((users) =>
+        this._upadateUserState({
+          isLoading: false,
+          error: null,
+          allUsers: users,
+        })
+      )
     );
   }
 
@@ -67,23 +81,17 @@ export class UserService {
   }
 
   createNewUser(firstName: string, lastName: string, avatarUrl: string) {
-    const { id: _userId, userData: _userData } = this.userUtils.formatUserData(
+    const { id: _userId, userData: _userData } = this._formatUserData(
       firstName,
       lastName,
       avatarUrl
     );
-
     return from<Promise<UsersData>>(db._addUser(_userData)).pipe(
       map((userData) => userData[_userId])
     );
   }
 
-  updatedUsersPollData = () => {
-    this._upadateUserState({ isLoading: true });
-    return this.getAllUsers();
-  };
-
-  private _upadateUserState(newState: Partial<UserState>) {
+  private _upadateUserState = (newState: Partial<UserState>) => {
     this._userState = {
       ...this._userState,
       currentUser:
@@ -102,5 +110,27 @@ export class UserService {
         newState.error === undefined ? this._userState.error : newState.error,
     };
     this._userStateSubject.next({ ...this._userState });
+  };
+
+  private _formatUserData(
+    firstName: string,
+    lastName: string,
+    avatarUrl: string
+  ) {
+    let _userId =
+      (firstName + lastName).toLowerCase() +
+      "-" +
+      Math.random().toString(36).substring(2, 6);
+    let _user: UsersData = {
+      [_userId]: {
+        id: _userId,
+        name: `${firstName} ${lastName}`,
+        avatarURL: avatarUrl,
+        questions: [],
+        answers: {},
+      },
+    };
+
+    return { id: _userId, userData: _user };
   }
 }
