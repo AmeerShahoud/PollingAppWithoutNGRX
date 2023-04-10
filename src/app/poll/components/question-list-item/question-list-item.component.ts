@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { Store } from "@ngrx/store";
-import * as AuthSelectors from "src/app/auth/state/selectors/auth.selectors";
-import { AuthorQuestion } from "../../models/author-question";
+
+import { QuestionWithAuthor } from "../../models/author-question";
+import { UserService } from "src/app/auth/services/user/user.service";
 
 @Component({
   selector: "app-question-list-item",
@@ -9,8 +9,8 @@ import { AuthorQuestion } from "../../models/author-question";
   styleUrls: ["./question-list-item.component.css"],
 })
 export class QuestionListItemComponent {
-  @Input("question") authorQuestion!: AuthorQuestion;
-  user$ = this.store.select(AuthSelectors.selectUser);
+  @Input("question") authorQuestion!: QuestionWithAuthor;
+  user$ = this.userService.currentUser$;
 
-  constructor(private store: Store) {}
+  constructor(private userService: UserService) {}
 }

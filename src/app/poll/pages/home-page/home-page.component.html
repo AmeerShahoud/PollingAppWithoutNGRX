@@ -11,13 +11,13 @@
       <mat-tab-group selectedIndex="1">
         <mat-tab [label]="answeredQuestionsCount"
           ><app-question-list
-            [questions]="answeredQuestions"
+            [questions]="answeredQuestionsWithAuthors"
             [isAnsweredQuestions]="true"
           ></app-question-list
         ></mat-tab>
         <mat-tab [label]="unAnsweredQuestionsCount"
           ><app-question-list
-            [questions]="unAnsweredQuestions"
+            [questions]="unAnsweredQuestionsWithAuthors"
             [isAnsweredQuestions]="false"
           ></app-question-list
         ></mat-tab>

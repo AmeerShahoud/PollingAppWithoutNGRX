@@ -1,10 +1,9 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Store } from "@ngrx/store";
+import { FormControl, Validators } from "@angular/forms";
 import { Subject, takeUntil } from "rxjs";
 import { User } from "../../models/user";
-import * as AuthSelectors from "../../state/selectors/auth.selectors";
-import { FormControl, Validators } from "@angular/forms";
-import * as AuthActions from "../../state/actions/auth.actions";
+import { AuthService } from "../../services/auth/auth.service";
+import { UserService } from "../../services/user/user.service";
 
 @Component({
   selector: "app-login",
@@ -17,11 +16,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   selectedUser = new FormControl("", [Validators.required]);
 
-  constructor(private store: Store) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
-    this.store
-      .select(AuthSelectors.selectAllUsers)
+    this.userService.allUsers$
       .pipe(takeUntil(this.destroySubscriptions))
       .subscribe((users) => {
         this.users = users;
@@ -36,9 +37,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.store.dispatch(
-      AuthActions.login({ userId: this.selectedUser.value ?? "" })
-    );
+    this.authService.login(this.selectedUser.value ?? "");
   }
 
   ngOnDestroy(): void {

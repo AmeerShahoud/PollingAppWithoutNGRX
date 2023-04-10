@@ -1,11 +1,9 @@
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Store } from "@ngrx/store";
-import { Subject } from "rxjs";
 import { User } from "src/app/auth/models/user";
-import { AuthorQuestion } from "../../models/author-question";
-import * as PollActions from "../../state/actions/poll.actions";
+import { QuestionWithAuthor } from "../../models/author-question";
+import { QuestionService } from "../../services/question/question.service";
 
 @Component({
   selector: "app-question-vote",
@@ -13,11 +11,14 @@ import * as PollActions from "../../state/actions/poll.actions";
   styleUrls: ["./question-vote.component.css"],
 })
 export class QuestionVoteComponent implements OnInit {
-  @Input("question") authorQuestion!: AuthorQuestion;
+  @Input("question") authorQuestion!: QuestionWithAuthor;
   @Input("user") user!: User | null;
   answer = new FormControl("", [Validators.required]);
 
-  constructor(private store: Store, private snackBar: MatSnackBar) {}
+  constructor(
+    private questionService: QuestionService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {}
 
@@ -27,12 +28,10 @@ export class QuestionVoteComponent implements OnInit {
       return;
     }
     if (this.user && this.authorQuestion.question) {
-      this.store.dispatch(
-        PollActions.saveQuestionAnswer({
-          authedUserId: this.user.id,
-          questionId: this.authorQuestion.question.id,
-          answer: this.answer.value as "optionOne" | "optionTwo",
-        })
+      this.questionService.saveQuestionAnswer(
+        this.user.id,
+        this.authorQuestion.question.id,
+        this.answer.value as "optionOne" | "optionTwo"
       );
     }
   }

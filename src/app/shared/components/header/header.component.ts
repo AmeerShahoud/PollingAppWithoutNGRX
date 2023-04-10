@@ -1,25 +1,21 @@
-import { Component, OnInit } from "@angular/core";
-import * as AuthSelectors from "../../../auth/state/selectors/auth.selectors";
-import * as AuthActions from "../../../auth/state/actions/auth.actions";
-import { Store } from "@ngrx/store";
-import { User } from "src/app/auth/models/user";
-import { Observable } from "rxjs";
+import { Component } from "@angular/core";
+import { AuthService } from "src/app/auth/services/auth/auth.service";
+import { UserService } from "src/app/auth/services/user/user.service";
 
 @Component({
   selector: "app-header",
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.css"],
 })
-export class HeaderComponent implements OnInit {
-  user$!: Observable<User | null>;
+export class HeaderComponent {
+  user$ = this.userService.currentUser$;
 
-  constructor(private store: Store) {}
-
-  ngOnInit(): void {
-    this.user$ = this.store.select(AuthSelectors.selectUser);
-  }
+  constructor(
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
 
   onLogout() {
-    this.store.dispatch(AuthActions.logout());
+    this.authService.logout();
   }
 }

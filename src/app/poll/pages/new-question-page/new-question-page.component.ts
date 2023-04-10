@@ -1,6 +1,5 @@
 import { Component } from "@angular/core";
-import { Store } from "@ngrx/store";
-import * as PollSelectors from "../../state/selectors/poll.selectors";
+import { QuestionService } from "../../services/question/question.service";
 
 @Component({
   selector: "app-new-question-page",
@@ -8,7 +7,7 @@ import * as PollSelectors from "../../state/selectors/poll.selectors";
   styleUrls: ["./new-question-page.component.scss"],
 })
 export class NewQuestionPageComponent {
-  isLoading$ = this.store.select(PollSelectors.selectIsLoading);
+  isLoading$ = this.questionService.isLoading$;
 
-  constructor(private store: Store) {}
+  constructor(private questionService: QuestionService) {}
 }

@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Store } from "@ngrx/store";
-import * as AuthActions from "./auth/state/actions/auth.actions";
+import { UserService } from "./auth/services/user/user.service";
 
 @Component({
   selector: "app-root",
@@ -10,9 +9,9 @@ import * as AuthActions from "./auth/state/actions/auth.actions";
 export class AppComponent implements OnInit {
   title = "polling-app";
 
-  constructor(private store: Store) {}
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.store.dispatch(AuthActions.getAllUsers());
+    this.userService.loadUsers();
   }
 }

@@ -1,10 +1,9 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Component, OnDestroy } from "@angular/core";
+import { FormBuilder, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
-import { Store } from "@ngrx/store";
-import { Subject, Subscription, takeUntil } from "rxjs";
+import { Subject, takeUntil } from "rxjs";
 import { AvatarAlbumComponent } from "src/app/shared/components/avatar-album/avatar-album.component";
-import * as AuthActions from "../../state/actions/auth.actions";
+import { AuthService } from "../../services/auth/auth.service";
 
 @Component({
   selector: "app-signup",
@@ -29,7 +28,7 @@ export class SignupComponent implements OnDestroy {
   }
 
   constructor(
-    private store: Store,
+    private authServcie: AuthService,
     private fb: FormBuilder,
     private dialog: MatDialog
   ) {}
@@ -51,12 +50,10 @@ export class SignupComponent implements OnDestroy {
       this.signUpForm.markAsTouched();
       return;
     }
-    this.store.dispatch(
-      AuthActions.signUp({
-        firstName: this.firstName.value,
-        lastName: this.lastName.value,
-        avatarUrl: this.avatarUrl ?? "",
-      })
+    this.authServcie.signUp(
+      this.firstName.value,
+      this.lastName.value,
+      this.avatarUrl ?? ""
     );
   }
 

@@ -9,10 +9,6 @@ import { SignupComponent } from "./components/signup/signup.component";
 import { MaterialModule } from "../material/material.module";
 import { SharedModule } from "../shared/shared.module";
 import { ReactiveFormsModule } from "@angular/forms";
-import { StoreModule } from "@ngrx/store";
-import * as fromAuth from "./state/reducers/auth.reducer";
-import { EffectsModule } from "@ngrx/effects";
-import { AuthEffects } from "./state/effects/auth.effects";
 
 @NgModule({
   declarations: [
@@ -24,8 +20,7 @@ import { AuthEffects } from "./state/effects/auth.effects";
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.reducer),
-    EffectsModule.forFeature([AuthEffects]),
+
     MaterialModule,
     SharedModule,
     AuthRoutingModule,

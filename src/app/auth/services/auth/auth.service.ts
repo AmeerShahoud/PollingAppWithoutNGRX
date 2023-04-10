@@ -26,7 +26,7 @@ export interface AuthState {
 @Injectable({
   providedIn: "root",
 })
-export class AuthService implements OnInit, OnDestroy {
+export class AuthService implements OnDestroy {
   private _authState: AuthState = {
     isLoading: false,
     isLoggedIn: false,
@@ -50,22 +50,21 @@ export class AuthService implements OnInit, OnDestroy {
   }
 
   private returnUrl!: string;
-  private destroySubscriptions = new Subject();
+  private _destroySubscriptions = new Subject();
 
   constructor(
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+    // const _user = localStorage.getItem("user");
+    // if (_user) {
+    //   this._upadateAuthState({ isLoggedIn: true });
+    // }
 
-  ngOnInit() {
-    const _user = localStorage.getItem("user");
-    if (_user) {
-      this._upadateAuthState({ isLoggedIn: true });
-    }
     this.route.queryParams
-      .pipe(takeUntil(this.destroySubscriptions))
+      .pipe(takeUntil(this._destroySubscriptions))
       .subscribe((queryParams) => {
         this.returnUrl = queryParams["returnUrl"] || "/home";
       });
@@ -73,38 +72,48 @@ export class AuthService implements OnInit, OnDestroy {
 
   login(userId: string) {
     this._upadateAuthState({ isLoading: true });
-    return this.userService.getUserById(userId).pipe(
-      switchMap((user) => {
-        if (!user)
-          return throwError(
-            () => new Error("Error! Please try to login again.")
-          );
-        else return of(user);
-      }),
-      tap(this._authHandler(`Weclome back! `)),
-      catchError(this._errorHandler)
-    );
+    return this.userService
+      .getUserById(userId)
+      .pipe(
+        switchMap((user) => {
+          if (!user)
+            return throwError(
+              () => new Error("Error! Please try to login again.")
+            );
+          else return of(user);
+        }),
+        tap(this._authHandler(`Weclome back! `)),
+        catchError(this._errorHandler)
+      )
+      .pipe(takeUntil(this._destroySubscriptions))
+      .subscribe();
   }
 
   signUp(firstName: string, lastName: string, avatarUrl: string) {
     this._upadateAuthState({ isLoading: true });
-    return this.userService.createNewUser(firstName, lastName, avatarUrl).pipe(
-      switchMap((user) => {
-        if (!user)
-          return throwError(
-            () =>
-              new Error("Error! Creating new account failed, please try again.")
-          );
-        else return of(user);
-      }),
-      tap(this._authHandler(`Weclome to Polling! `)),
-      tap((_) => this.userService.loadUsers()),
-      catchError(this._errorHandler)
-    );
+    return this.userService
+      .createNewUser(firstName, lastName, avatarUrl)
+      .pipe(
+        switchMap((user) => {
+          if (!user)
+            return throwError(
+              () =>
+                new Error(
+                  "Error! Creating new account failed, please try again."
+                )
+            );
+          else return of(user);
+        }),
+        tap(this._authHandler(`Weclome to Polling! `)),
+        tap((_) => this.userService.loadUsers()),
+        catchError(this._errorHandler)
+      )
+      .pipe(takeUntil(this._destroySubscriptions))
+      .subscribe();
   }
 
   logout() {
-    localStorage.removeItem("user");
+    // localStorage.removeItem("user");
     this.userService.setCurrentUser(null);
     this.snackBar.open("Logged out successfully!");
     this.router.navigate(["/login"]);
@@ -113,7 +122,7 @@ export class AuthService implements OnInit, OnDestroy {
 
   private _authHandler = (snackPrefixText: string) => {
     return (user: User) => {
-      localStorage.setItem("user", JSON.stringify(user));
+      // localStorage.setItem("user", JSON.stringify(user));
       this.userService.setCurrentUser(user);
       this.snackBar.open(snackPrefixText + user.name);
       this.router.navigate([this.returnUrl]);
@@ -155,6 +164,6 @@ export class AuthService implements OnInit, OnDestroy {
   };
 
   ngOnDestroy(): void {
-    this.destroySubscriptions.complete();
+    this._destroySubscriptions.complete();
   }
 }

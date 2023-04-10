@@ -1,10 +1,9 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
-import { Store } from "@ngrx/store";
 import { Subject, takeUntil } from "rxjs";
 import { User } from "src/app/auth/models/user";
-import * as AuthSelectors from "src/app/auth/state/selectors/auth.selectors";
-import * as PollActions from "../../state/actions/poll.actions";
+import { UserService } from "src/app/auth/services/user/user.service";
+import { QuestionService } from "../../services/question/question.service";
 
 @Component({
   selector: "app-create-new-question",
@@ -21,11 +20,14 @@ export class CreateNewQuestionComponent implements OnInit, OnDestroy {
 
   private destroySubscriptions = new Subject();
 
-  constructor(private store: Store, private fb: FormBuilder) {}
+  constructor(
+    private userService: UserService,
+    private questionService: QuestionService,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
-    this.store
-      .select(AuthSelectors.selectUser)
+    this.userService.currentUser$
       .pipe(takeUntil(this.destroySubscriptions))
       .subscribe((user) => (this.user = user));
   }
@@ -36,12 +38,10 @@ export class CreateNewQuestionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.store.dispatch(
-      PollActions.addQuestion({
-        authorId: this.user!.id,
-        optionOneText: this.questionForm.value.optionOne!,
-        optionTwoText: this.questionForm.value.optionTwo!,
-      })
+    this.questionService.createNewQuestion(
+      this.questionForm.value.optionOne!,
+      this.questionForm.value.optionTwo!,
+      this.user!.id
     );
   }
 

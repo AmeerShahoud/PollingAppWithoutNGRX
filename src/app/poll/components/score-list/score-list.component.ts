@@ -1,6 +1,5 @@
 import { Component } from "@angular/core";
-import { Store } from "@ngrx/store";
-import * as PollSelectors from "../../state/selectors/poll.selectors";
+import { UserService } from "src/app/auth/services/user/user.service";
 
 @Component({
   selector: "app-score-list",
@@ -8,6 +7,6 @@ import * as PollSelectors from "../../state/selectors/poll.selectors";
   styleUrls: ["./score-list.component.scss"],
 })
 export class ScoreListComponent {
-  scoreList$ = this.store.select(PollSelectors.selectUsersScores);
-  constructor(private store: Store) {}
+  scoreList$ = this.userService.usersScores$;
+  constructor(private userService: UserService) {}
 }

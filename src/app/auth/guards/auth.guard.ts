@@ -5,17 +5,16 @@ import {
   RouterStateSnapshot,
 } from "@angular/router";
 import { map } from "rxjs";
-import { Store } from "@ngrx/store";
-import * as AuthSelectors from "../state/selectors/auth.selectors";
+import { AuthService } from "../services/auth/auth.service";
 
 export const authGuard = (
   route: ActivatedRouteSnapshot,
   routerState: RouterStateSnapshot
 ) => {
-  const store = inject(Store);
+  const authService = inject(AuthService);
   const router = inject(Router);
 
-  return store.select(AuthSelectors.selectIsLoggedIn).pipe(
+  return authService.isLoggedIn$.pipe(
     map((isLoggedIn) => {
       if (isLoggedIn) return true;
       else {
@@ -32,10 +31,10 @@ export const isLoggedGuard = (
   route: ActivatedRouteSnapshot,
   routerState: RouterStateSnapshot
 ) => {
-  const store = inject(Store);
+  const authService = inject(AuthService);
   const router = inject(Router);
 
-  return store.select(AuthSelectors.selectIsLoggedIn).pipe(
+  return authService.isLoggedIn$.pipe(
     map((isLoggedIn) => {
       if (!isLoggedIn) return true;
       else {

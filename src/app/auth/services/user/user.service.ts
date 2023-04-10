@@ -1,7 +1,8 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject, from, map, tap } from "rxjs";
+import { Injectable, OnDestroy } from "@angular/core";
+import { BehaviorSubject, Subject, from, map, takeUntil, tap } from "rxjs";
 import { User } from "../../models/user";
 import * as db from "../../../db/_DATA.js";
+import { UserScore } from "src/app/poll/models/user-score";
 
 type UsersData = { [userId: string]: User };
 
@@ -15,7 +16,7 @@ export interface UserState {
 @Injectable({
   providedIn: "root",
 })
-export class UserService {
+export class UserService implements OnDestroy {
   private _userState: UserState = {
     isLoading: false,
     currentUser: null,
@@ -39,15 +40,41 @@ export class UserService {
     return this._userStateSubject.pipe(map((state) => state.allUsers));
   }
 
+  get usersScores$() {
+    return this.allUsers$.pipe(
+      map((users) =>
+        users
+          .map((user) => {
+            const _totalQuestions = user.questions.length;
+            let _totalAnswers = 0;
+            for (let i in user.answers) _totalAnswers++;
+            return {
+              userId: user.id,
+              userName: user.name,
+              avatarUrl: user.avatarURL,
+              totalCreatedQuestions: _totalQuestions,
+              totalAnsweredQuestions: _totalAnswers,
+              totalScore: _totalAnswers + _totalQuestions,
+            } as UserScore;
+          })
+          .sort(
+            (scoreOne, scoreTwo) => scoreTwo.totalScore - scoreOne.totalScore
+          )
+      )
+    );
+  }
+
   get error$() {
     return this._userStateSubject.pipe(map((state) => state.error));
   }
 
+  private _destroySubscriptions = new Subject();
+
   constructor() {
-    const _user = localStorage.getItem("user");
-    if (_user) {
-      this._upadateUserState({ currentUser: JSON.parse(_user) as User });
-    }
+    // const _user = localStorage.getItem("user");
+    // if (_user) {
+    //   this._upadateUserState({ currentUser: JSON.parse(_user) as User });
+    // }
   }
 
   getUserById(id: string) {
@@ -58,23 +85,30 @@ export class UserService {
     );
   }
 
-  loadUsers() {
+  loadUsers = () => {
     this._upadateUserState({ isLoading: true });
-    return from<Promise<UsersData>>(db._getUsers()).pipe(
-      map((users) => {
-        let _users: User[] = [];
-        for (let id in users) _users.push(users[id]);
-        return _users;
-      }),
-      tap((users) =>
-        this._upadateUserState({
-          isLoading: false,
-          error: null,
-          allUsers: users,
-        })
+    from<Promise<UsersData>>(db._getUsers())
+      .pipe(
+        map((users) => {
+          let _users: User[] = [];
+          for (let id in users) _users.push(users[id]);
+          return _users;
+        }),
+        tap((users) =>
+          this._upadateUserState({
+            isLoading: false,
+            error: null,
+            currentUser:
+              users.find(
+                (user) => user.id === this._userState.currentUser?.id
+              ) ?? null,
+            allUsers: users,
+          })
+        )
       )
-    );
-  }
+      .pipe(takeUntil(this._destroySubscriptions))
+      .subscribe();
+  };
 
   setCurrentUser(user: User | null) {
     this._upadateUserState({ currentUser: user });
@@ -132,5 +166,9 @@ export class UserService {
     };
 
     return { id: _userId, userData: _user };
+  }
+
+  ngOnDestroy(): void {
+    this._destroySubscriptions.complete();
   }
 }

@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
 import { User } from "src/app/auth/models/user";
 import { Question } from "../../models/question";
-import { AuthorQuestion } from "../../models/author-question";
+import { QuestionWithAuthor } from "../../models/author-question";
 
 @Component({
   selector: "app-question-statistics",
@@ -10,7 +10,7 @@ import { AuthorQuestion } from "../../models/author-question";
 })
 export class QuestionStatisticsComponent {
   @Input("user") user!: User | null;
-  @Input("question") authorQuestion!: AuthorQuestion;
+  @Input("question") authorQuestion!: QuestionWithAuthor;
 
   get userAnswer() {
     return this.user?.answers[this.authorQuestion.question.id];

@@ -1,7 +1,7 @@
-import { Component, OnInit } from "@angular/core";
-import { Store } from "@ngrx/store";
-import { Observable } from "rxjs";
-import * as AuthSelectors from "../../state/selectors/auth.selectors";
+import { Component } from "@angular/core";
+import { combineLatest, map } from "rxjs";
+import { AuthService } from "../../services/auth/auth.service";
+import { UserService } from "../../services/user/user.service";
 
 @Component({
   selector: "app-signup-page",
@@ -9,7 +9,17 @@ import * as AuthSelectors from "../../state/selectors/auth.selectors";
   styleUrls: ["./signup-page.component.css"],
 })
 export class SignupPageComponent {
-  isLoading$ = this.store.select(AuthSelectors.selectIsLoading);
+  isLoading$ = combineLatest([
+    this.authService.isLoading$,
+    this.userService.isLoading$,
+  ]).pipe(
+    map((isLoading) => {
+      return isLoading[0] || isLoading[1];
+    })
+  );
 
-  constructor(private store: Store) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
 }

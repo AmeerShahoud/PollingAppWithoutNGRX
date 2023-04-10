@@ -10,16 +10,18 @@
         <ng-container
           *ngIf="IsSelectedQuestionAnswered$ | async; else voteQuestion"
           ><app-question-statistics
-            [question]="(selectedAuthorQuestion$ | async)!"
+            [question]="(selectedQuestionWithAuthor$ | async)!"
             [user]="user"
             class="col-lg-8 col-md-10 col-sm-12"
           ></app-question-statistics
         ></ng-container>
         <ng-template #voteQuestion
           ><ng-container
-            *ngIf="selectedAuthorQuestion$ | async as selectedAuthorQuestion"
+            *ngIf="
+              selectedQuestionWithAuthor$ | async as selectedQuestionWithAuthor
+            "
             ><app-question-vote
-              [question]="selectedAuthorQuestion"
+              [question]="selectedQuestionWithAuthor"
               [user]="user"
               class="col-lg-8 col-md-10 col-sm-12"
             ></app-question-vote></ng-container

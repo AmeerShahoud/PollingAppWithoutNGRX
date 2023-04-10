@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { AuthorQuestion } from "../../models/author-question";
+import { QuestionWithAuthor } from "../../models/author-question";
 
 @Component({
   selector: "app-question-list",
@@ -7,6 +7,6 @@ import { AuthorQuestion } from "../../models/author-question";
   styleUrls: ["./question-list.component.css"],
 })
 export class QuestionListComponent {
-  @Input("questions") authorQuestions: AuthorQuestion[] = [];
+  @Input("questions") authorQuestions: QuestionWithAuthor[] = [];
   @Input("isAnsweredQuestions") isAnsweredQuestions?: boolean;
 }
